@@ -92,6 +92,10 @@ body{background:var(--bg);color:var(--fg);font-family:'DM Mono',monospace;-webki
 .mint-btn .lb{position:relative;z-index:1}
 .mint-m{display:flex;justify-content:space-between;margin-top:6px;font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .mint-m .rst{cursor:pointer}.mint-m .rst:hover{color:var(--accent)}
+.play-btn{width:100%;height:38px;background:transparent;color:var(--fg);border:1px solid var(--fg);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.18em;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;margin-top:8px;gap:8px}
+.play-btn:hover{background:var(--fg);color:var(--bg)}.play-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.play-btn.active:hover{background:#a12020}.play-btn.loading{opacity:.7;pointer-events:none}
+.play-prog{font-size:10px;font-family:'DM Mono',monospace;letter-spacing:0}
 .play-btn{width:100%;height:38px;background:transparent;color:var(--fg);border:1px solid var(--fg);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.18em;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;margin-top:8px}
 .play-btn:hover{background:var(--fg);color:var(--bg)}.play-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
 .play-btn.active:hover{background:#a12020}
@@ -376,15 +380,15 @@ async function handleMint(){
   }
   S.phase=np;
   dov.classList.add('on');wrap.classList.add('transitioning');
-  await sleep(playing?100:300);
+  await sleep(300);
   const d=S.curData.data;
-  const nm=2+Math.floor(Math.random()*2)+Math.floor(np*0.8);
+  const nm=2+Math.floor(Math.random()*2)+(np>=4?1:0);
   const used=new Set();
   for(let m=0;m<nm;m++){const k=mK[Math.floor(Math.random()*mK.length)];S.pxLost+=MU[k].fn(d);
     if(!used.has(k)){used.add(k);addLog(MU[k].n,MU[k].d,S.mint);}}
   X.putImageData(S.curData,0,0);updateUI();
-  await sleep(playing?200:600);dov.classList.remove('on');wrap.classList.remove('transitioning');
-  setTimeout(()=>{btn.classList.remove('busy');bar.style.width='0';S.generating=false;},playing?100:400);
+  await sleep(600);dov.classList.remove('on');wrap.classList.remove('transitioning');
+  setTimeout(()=>{btn.classList.remove('busy');bar.style.width='0';S.generating=false;},400);
 }
 
 function handleReset(){
@@ -395,37 +399,93 @@ function handleReset(){
   updateUI();addLog('RESET','memory restored',0);S.generating=false;
 }
 
-let playing=false,playTimer=null;
-const MAX_PLAY_MINT=35;
-const PLAY_INTERVAL=1200;
+// ========= PRECOMPUTED SEQUENCE PLAYBACK =========
+let playing=false,playRAF=null,seqFrames=null,seqIdx=0;
+const TOTAL_FRAMES=35;
+const FRAME_MS=1200;
 
-function togglePlay(){
+async function precomputeFrames(){
   const btn=document.getElementById('playBtn'),lb=document.getElementById('playLb');
-  if(playing){
-    playing=false;clearTimeout(playTimer);playTimer=null;
-    btn.classList.remove('active');lb.textContent='▶ PLAY FULL SEQUENCE';
-  }else{
-    playing=true;
-    btn.classList.add('active');lb.textContent='■ STOP';
-    if(S.mint>=MAX_PLAY_MINT){handleReset();setTimeout(()=>playStep(),800);}
-    else{playStep();}
+  btn.classList.add('loading');
+  lb.textContent='RENDERING 0/'+TOTAL_FRAMES+'...';
+
+  // Reset to origin
+  const tmpData=new Uint8ClampedArray(S.origData.data);
+  const frames=[];
+  // Frame 0 = original
+  frames.push(new Uint8ClampedArray(tmpData));
+
+  for(let f=1;f<=TOTAL_FRAMES;f++){
+    lb.textContent='RENDERING '+f+'/'+TOTAL_FRAMES+'...';
+    // Allow UI to breathe
+    await new Promise(r=>setTimeout(r,4));
+
+    const ph=getPhase(f);
+    const nm=2+Math.floor(Math.random()*2)+(ph>=4?1:0);
+    for(let m=0;m<nm;m++){
+      const k=mK[Math.floor(Math.random()*mK.length)];
+      MU[k].fn(tmpData);
+    }
+    frames.push(new Uint8ClampedArray(tmpData));
   }
+
+  btn.classList.remove('loading');
+  return frames;
 }
 
-async function playStep(){
-  if(!playing)return;
-  await handleMint();
-  if(!playing)return;
-  if(S.mint>=MAX_PLAY_MINT){
-    // Pause at the end, then reset and loop
-    playTimer=setTimeout(()=>{
-      if(!playing)return;
-      handleReset();
-      playTimer=setTimeout(()=>playStep(),800);
-    },2500);
-  }else{
-    playTimer=setTimeout(()=>playStep(),PLAY_INTERVAL);
+async function togglePlay(){
+  const btn=document.getElementById('playBtn'),lb=document.getElementById('playLb');
+
+  if(playing){
+    // Stop
+    playing=false;
+    if(playRAF)cancelAnimationFrame(playRAF);
+    playRAF=null;
+    btn.classList.remove('active');
+    lb.textContent='▶ PLAY FULL SEQUENCE';
+    // Restore interactive state to current frame
+    if(seqFrames&&seqIdx>0){
+      S.mint=seqIdx;S.phase=getPhase(seqIdx);
+      S.curData=new ImageData(new Uint8ClampedArray(seqFrames[seqIdx]),PW,PH);
+      X.putImageData(S.curData,0,0);
+      updateUI();
+    }
+    return;
   }
+
+  // Precompute if needed
+  if(!seqFrames){
+    seqFrames=await precomputeFrames();
+  }
+
+  playing=true;seqIdx=0;
+  btn.classList.add('active');
+  lb.textContent='■ STOP';
+
+  // Put original on canvas
+  const frame0=new ImageData(new Uint8ClampedArray(seqFrames[0]),PW,PH);
+  X.putImageData(frame0,0,0);
+  S.mint=0;S.phase=0;updateUI();
+
+  let lastTime=performance.now();
+
+  function tick(now){
+    if(!playing)return;
+    const elapsed=now-lastTime;
+    if(elapsed>=FRAME_MS){
+      lastTime=now-(elapsed%FRAME_MS);
+      seqIdx++;
+      if(seqIdx>TOTAL_FRAMES){
+        seqIdx=0; // loop
+      }
+      const fd=new ImageData(new Uint8ClampedArray(seqFrames[seqIdx]),PW,PH);
+      X.putImageData(fd,0,0);
+      S.mint=seqIdx;S.phase=getPhase(seqIdx);
+      updateUI();
+    }
+    playRAF=requestAnimationFrame(tick);
+  }
+  playRAF=requestAnimationFrame(tick);
 }
 </script>
 </body>
