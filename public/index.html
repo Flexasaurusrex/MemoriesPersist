@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -92,13 +93,6 @@ body{background:var(--bg);color:var(--fg);font-family:'DM Mono',monospace;-webki
 .mint-btn .lb{position:relative;z-index:1}
 .mint-m{display:flex;justify-content:space-between;margin-top:6px;font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .mint-m .rst{cursor:pointer}.mint-m .rst:hover{color:var(--accent)}
-.play-btn{width:100%;height:38px;background:transparent;color:var(--fg);border:1px solid var(--fg);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.18em;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;margin-top:8px;gap:8px}
-.play-btn:hover{background:var(--fg);color:var(--bg)}.play-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
-.play-btn.active:hover{background:#a12020}.play-btn.loading{opacity:.7;pointer-events:none}
-.play-prog{font-size:10px;font-family:'DM Mono',monospace;letter-spacing:0}
-.play-btn{width:100%;height:38px;background:transparent;color:var(--fg);border:1px solid var(--fg);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.18em;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;margin-top:8px}
-.play-btn:hover{background:var(--fg);color:var(--bg)}.play-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
-.play-btn.active:hover{background:#a12020}
 .footer{border-top:1px solid var(--fg);padding:8px 32px;display:flex;justify-content:space-between;font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .fdot{width:5px;height:5px;background:var(--accent);display:inline-block;margin-right:6px}
 .dream-ov{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:10000;opacity:0;transition:opacity .8s ease;
@@ -156,7 +150,6 @@ body{background:var(--bg);color:var(--fg);font-family:'DM Mono',monospace;-webki
     </div>
     <div class="mint-area">
       <button class="mint-btn" id="mintBtn" onclick="handleMint()"><div class="pb" id="pb"></div><span class="lb">MINT NEXT ITERATION</span></button>
-      <button class="play-btn" id="playBtn" onclick="togglePlay()"><span id="playLb">▶ PLAY FULL SEQUENCE</span></button>
       <div class="mint-m"><span>Each mint transforms the work</span><span class="rst" onclick="handleReset()">↺ Reset</span></div>
     </div>
   </aside>
@@ -179,27 +172,27 @@ img.src='/artwork.png';
 const STYLE=`You are editing a bold graphic pop-art oil painting by Jose Narciso. The style features flat color fields, geometric shapes in pink/blue/yellow/green, checkerboard transparency patterns (gray-and-white squares representing digital void/memory loss), surreal landscapes with clouds and curved forms. Figures have blue or red/pink skin, wearing beige clothing. The painting explores Alzheimer's, memory loss, aging, and the confusion of time passing — symbols should shift, memories should intrude as ghostly forms, objects from different life stages can appear anachronistically. The checkerboard pattern is the central metaphor — it represents transparency, void, the deletion of memory, and eventually becomes a blanket of comfort and curse on the elderly figure. Maintain the exact same thick painterly brushwork and pop-art style throughout all transformations. Portrait orientation.`;
 
 const PHA=[
-  {name:'Origin',r:[0,3],label:'I — Origin',
+  {name:'Origin',r:[0,4],label:'I — Origin',
     narr:'<strong>The origin.</strong> Father and son together in a world of vivid color and sharp geometry. Every detail is present. Memory is whole.',
     prompt:null},
-  {name:'Drift',r:[4,7],label:'II — The Drift Begins',
-    narr:`<strong>Something shifts.</strong> Was his head always that pale? The edges of the father blur — the background warps where it was once rigid. Checkerboard voids appear at the margins like holes in a photograph. A ghost-image flickers. The child sees nothing wrong yet.`,
-    prompt:STYLE+` TRANSFORM this painting — make CLEARLY VISIBLE changes: The larger kneeling adult figure's red/pink head should be noticeably PALER — washed out, losing its vibrancy. His body edges should be SOFTENING and BLURRING into the background. Add PROMINENT patches of gray-and-white checkerboard pattern eating into the painting from the left edge, upper corners, and bottom — these should cover at least 15-20% of the canvas. The geometric background should be WARPING slightly — straight lines becoming curved, colors bleeding into each other. Add a ghostly dissolving clock face or hourglass in the upper background. A faint second ghost-image of the father should appear offset by a few inches, like a double exposure — memory already becoming unreliable. The child figure remains sharp and vivid, contrasting with the decay around him. Overall palette shifted noticeably cooler and more muted.`},
-  {name:'Absence',r:[8,11],label:'III — Growing Absence',
-    narr:`<strong>He is dissolving.</strong> The father's body breaks apart — you can see the geometry through his chest where solid flesh should be. The checkerboard devours him from the edges inward. Fragments of other lives flicker in the void — a house, hands reaching, writing that can't be read. The child grows taller. He is beginning to understand.`,
-    prompt:STYLE+` DRAMATICALLY transform this painting: The larger kneeling adult figure on the left is now VISIBLY DISSOLVING — at least 40-50% of his body should be replaced by checkerboard transparency pattern. His torso and limbs are breaking apart into geometric fragments that float slightly away from where they should be. His red/pink head is now almost WHITE, ghostly, barely there. The blue-skinned child on the right should be CLEARLY TALLER — growing visibly, standing more upright, taking up more space. Checkerboard pattern now covers at LEAST 30-35% of the total canvas, aggressively eating into the composition from edges and through the father's body. Add MULTIPLE surreal memory fragments floating in the scene — a ghostly house outline, disembodied blue hands reaching, scattered illegible handwriting, a dissolving family photograph, a child's drawing crumpling — all painted in the same pop-art style but pale and translucent. The background geometry is WARPING and SIMPLIFYING. Colors SIGNIFICANTLY more muted — the vibrancy is draining away.`},
-  {name:'Growth',r:[12,15],label:'IV — The Child Grows',
-    narr:`<strong>Time has folded.</strong> Where the father knelt there is only void and the faintest warmth. The child is a young man now — taller, broader, standing where his father dissolved. A child's toy floats beside reading glasses. A wedding ring beside a cane. Past and future exist in the same broken space.`,
-    prompt:STYLE+` MAJOR TRANSFORMATION of this painting: The adult figure on the left is NOW GONE — completely replaced by checkerboard transparency pattern and scattered floating geometric debris where he used to be. Only the FAINTEST warm pink ghost-shadow hints at where he once knelt — like a stain on the air. The figure on the right has DRAMATICALLY GROWN — he is now clearly a YOUNG ADULT, tall, broad-shouldered, standing upright and dominant, still blue-skinned. He should be nearly TWICE the height of the original child. Scatter MANY anachronistic memory objects throughout the scene in the pop-art style: a child's red ball, reading glasses, a walking cane, a wedding ring, a baby shoe, a set of keys, a pill bottle, a faded letter — all floating at wrong scales, dreamlike, some dissolving into checkerboard. At LEAST 45-50% of the canvas should now be checkerboard transparency. The remaining background geometry is HEAVILY simplified and desaturated — mostly grays and pale yellows. The sense of loss should be OVERWHELMING.`},
-  {name:'Alone',r:[16,19],label:'V — Standing Alone',
-    narr:`<strong>Alone in a dissolving world.</strong> The father is gone — not even a shadow remains. The man stands at the center of expanding emptiness, haunted by overlapping memories he can no longer separate. Birthday candles blur into hospital lights. Children's laughter fades into silence. He cannot remember which came first.`,
-    prompt:STYLE+` TRANSFORM this painting into a scene of profound isolation: The left side where the father was is NOW ENTIRELY checkerboard void with only the faintest warm-colored mist suggesting a presence that is COMPLETELY GONE. The figure is now a FULL GROWN ADULT MAN — tall, blue-skinned, standing ALONE in the CENTER of the composition, facing slightly away, shoulders heavy with grief. He is the ONLY solid thing in a dissolving world. SURROUND him with overlapping ghostly memory scenes — transparent and dreamlike, layered on top of each other like multiple exposures: children playing but their forms dissolving, a birthday party seen through fog, a hospital corridor fading in and out, hands reaching but never touching, a dinner table with empty chairs, faces that are almost recognizable but blur when you look directly at them. These memories should OVERLAP and CONFUSE each other — time has broken down. At LEAST 55-60% of the canvas is checkerboard. The palette is HEAVILY desaturated — almost monochrome with only traces of the original colors surviving as faint echoes. Deeply melancholic, disorienting, surreal.`},
-  {name:'Seated',r:[20,23],label:'VI — The Cycle Completes',
-    narr:`<strong>The cruelest symmetry.</strong> He is old now. Seated. A wheelchair at the center of an almost empty canvas. The checkered blanket that covers his lap is the same pattern that ate his father alive — it wraps him now like a shroud made of forgetting. Around him float the last fragments of every age he has been, dissolving like ash in still air.`,
-    prompt:STYLE+` COMPLETELY REIMAGINE this painting — this is the most DRAMATIC transformation: REMOVE ALL previous figures entirely. In the CENTER of an almost EMPTY canvas, paint a single elderly man sitting slumped in a WHEELCHAIR. He is blue-skinned like the original child — this IS that child, now OLD. He is BALD, THIN, HUNCHED, wearing wrinkled beige clothing that hangs loose on his diminished frame. His eyes are distant, unfocused. A large CHECKERED BLANKET in the gray-and-white checkerboard transparency pattern covers his lap and legs — the SAME PATTERN that consumed his father is now literally wrapping around him, creeping UP his body. Around the wheelchair in the vast empty space, scatter FADING memory fragments: a ghostly child's handprint, the outline of the father's form hovering protectively but dissolving, a red ball rolling away, scattered photographs face-down, a single blue flower wilting. The background is 70-75% checkerboard void with only the palest ghost-fragments of the original colorful geometric world remaining — like looking at a painting through thick fog. The composition should feel DEVASTATINGLY empty and lonely. This is the cruelest moment — the child who watched his father disappear is now disappearing himself.`},
-  {name:'Void',r:[24,999],label:'VII — The Forgetting',
-    narr:`<strong>The forgetting.</strong> The blanket crawls upward through what remains of his body. The wheelchair dissolves. A single blue fingerprint. A microscopic red dot. The ghost of a smile. One illegible letter. Then nothing. The painting has forgotten itself completely. A whole life — reduced to pattern and void.`,
-    prompt:STYLE+` FINAL DISSOLUTION — transform this into near-TOTAL VOID: The composition is NOW 90-95% gray-and-white checkerboard transparency pattern. The wheelchair is DISSOLVING — only a few bent metal lines suggest it was ever there. The old man's body is BREAKING APART into the checkerboard — the blanket pattern is spreading UPWARD through his chest and face, absorbing him pixel by pixel. Only the TINIEST traces of the entire life remain scattered across the vast checkerboard expanse: a single faint blue fingerprint, a microscopic red dot where the ball was, the ghost of a smile, one letter from a word that can no longer be read, the thinnest wisp of pink where a father once knelt. Everything else is GONE — consumed by the pattern, returned to void. The painting has ALMOST COMPLETELY FORGOTTEN ITSELF. What remains is barely visible — you have to squint to see that a life was ever here. This is what forgetting looks like from the inside.`},
+  {name:'Drift',r:[5,9],label:'II — The Drift Begins',
+    narr:`<strong>Something shifts.</strong> The father's colors soften. His red head pales at the edges. Background geometry loosens — edges blur where they were once sharp. The child notices nothing yet.`,
+    prompt:STYLE+` Edit this painting with SUBTLE changes: The larger kneeling adult figure's red/pink head should become slightly paler and softer at the edges. Soften some hard geometric edges in the background. Add a few small patches of gray-and-white checkerboard pattern beginning to appear at the far left edge and upper corners. Perhaps a faint ghostly symbol appears in the background — a clock face dissolving, or a doorway half-formed in the geometric blocks — something that suggests time has begun to slip. The child figure remains unchanged. Colors slightly more muted overall. Changes should be subtle, like a photograph left in sunlight.`},
+  {name:'Absence',r:[10,14],label:'III — Growing Absence',
+    narr:`<strong>The father is fading.</strong> His form grows translucent — geometry bleeds through where his body should be solid. The checkerboard creeps inward. The child has grown slightly taller. Fragments of other images — a house, a hand, a half-remembered face — flicker at the edges.`,
+    prompt:STYLE+` Edit this painting: The larger kneeling adult figure on the left is now noticeably MORE TRANSPARENT and FADING — his body should be semi-translucent with background geometric shapes and checkerboard pattern showing through his torso and limbs. His red head is now pale pink, almost white. The smaller blue-skinned child on the right should be slightly taller and more vivid — standing out more. The checkerboard pattern has expanded significantly from the edges inward. Add surreal memory fragments appearing in the background — ghostly half-formed images like a house outline, scattered letters, a dissolving photograph, or hands reaching — painted in the same flat pop-art style but pale and transparent, like memories surfacing and fading. Colors more muted and cooler.`},
+  {name:'Growth',r:[15,19],label:'IV — The Child Grows',
+    narr:`<strong>Time folds.</strong> The father is mostly ghost — fragments floating in checkerboard void. The child has grown into a young man, taller, broader. Objects from different eras appear together impossibly — a child's toy beside reading glasses, a red ball near a cane.`,
+    prompt:STYLE+` Edit this painting significantly: The adult figure on the left should be ALMOST GONE — reduce to a faint ghostly outline with most of his form replaced by checkerboard transparency pattern. Only traces of his shape remain like an afterimage. The figure on the right is now noticeably TALLER and LARGER — proportioned like a teenager/young adult, still blue-skinned, more upright and dominant in the composition. Add anachronistic objects from different life stages appearing in the scene — painted in the same pop-art style: a child's red toy or ball near the bottom, reading glasses floating in mid-air, a walking cane leaning against nothing, a small framed photograph dissolving into checkerboard. These memory objects should feel dreamlike and slightly wrong in scale. Large sections of background consumed by checkerboard. Palette significantly desaturated.`},
+  {name:'Alone',r:[20,24],label:'V — Standing Alone',
+    narr:`<strong>He stands alone.</strong> The father exists only as warmth in the air. The young man occupies the center, surrounded by expanding voids. Memories intrude as ghostly overlays — scenes from a life half-remembered, superimposed on the dissolving landscape.`,
+    prompt:STYLE+` Edit this painting: The adult figure on the left is COMPLETELY GONE — replaced entirely by checkerboard transparency and faded geometric remnants. Perhaps the faintest warm-toned color echo or shadow suggests where he once was. The figure on the right is now a FULL ADULT — tall, central, blue-skinned, standing alone, moved slightly toward center. Add dreamlike memory overlays — ghostly transparent scenes from different life stages superimposed on the background: a birthday cake dissolving, children playing rendered as pale outlines, a wedding ring floating, a hospital hallway fading in and out of the geometric blocks. These should be surreal, overlapping, slightly confused — like trying to remember multiple things at once. Background largely consumed by checkerboard with scattered faded color blocks. A pervasive sense of emptiness and loss.`},
+  {name:'Seated',r:[25,29],label:'VI — The Cycle Completes',
+    narr:`<strong>The cycle completes.</strong> He is old now — seated in a wheelchair at the center of a nearly empty canvas. A checkered blanket covers his lap, the same pattern that consumed his father. Scattered around him: fragments of every age he's been, floating like debris in still water.`,
+    prompt:STYLE+` Edit this painting DRAMATICALLY: Remove all original figures. In the CENTER, place a single elderly man sitting in a WHEELCHAIR — blue-skinned like the original child but now OLD, bald, hunched, thin, wearing rumpled beige clothing. A prominent CHECKERED BLANKET with gray-and-white checkerboard pattern covers his lap and legs — this is the same pattern that consumed his father, now wrapping around him. Around the wheelchair, scatter dream-like memory fragments floating in the nearly empty space: a child's shoe, a pair of blue hands reaching, a red ball, scattered letters or words becoming illegible, a ghostly outline of the father figure hovering protectively but barely visible. The background is very sparse — mostly checkerboard transparency with only scattered fragments of the original colorful geometric blocks remaining as faded ghosts. Deeply melancholic, surreal, haunting.`},
+  {name:'Void',r:[30,999],label:'VII — The Forgetting',
+    narr:`<strong>The void.</strong> The blanket spreads upward through his dissolving body. The wheelchair is half-transparent. Every memory, every symbol, every color is being absorbed into the pattern. Soon there will be only checkerboard where a life once was.`,
+    prompt:STYLE+` Edit this painting to show near-total dissolution: The composition should be OVERWHELMINGLY checkerboard transparency pattern — covering 85-95% of the canvas. Only the faintest ghost traces remain: a barely-visible outline of a wheelchair, wisps of pale blue skin, the thinnest fragments of geometric background floating like debris. The checkerboard blanket has spread upward through the figure, consuming him from below. Tiny scattered remnants of memory objects — a half-pixel of red (the ball), a curve that might have been glasses, a single letter floating — but almost everything is gone. The painting has almost completely forgotten itself. Only enough visible to suggest what was once there — an entire life reduced to pattern and void.`},
 ];
 
 function getPhase(m){for(let i=PHA.length-1;i>=0;i--)if(m>=PHA[i].r[0])return i;return 0;}
@@ -247,29 +240,29 @@ async function dreamCrossfade(newImg){
   wrap.classList.remove('fading');
 }
 
-function I(){const base=Math.min(1,.15+S.mint/18);const phaseBoost=[1,1.2,1.5,1.8,2.2,2.5,3][S.phase]||1;return Math.min(3,base*phaseBoost)}
+function I(){return Math.min(1,.2+S.mint/30)}
 function rng(a,b){return a+Math.random()*(b-a)}
 
 const MU={
   checker:{n:'Checkerboard Void',d:'transparency consuming form',fn(d){
-    const sz=Math.floor(rng(6,16)),rx=Math.floor(Math.random()*PW*.6),ry=Math.floor(Math.random()*PH*.6);
-    const rw=Math.floor(PW*rng(.12,.4)*I()),rh=Math.floor(PH*rng(.12,.4)*I());let n=0;
+    const sz=Math.floor(rng(8,18)),rx=Math.floor(Math.random()*PW*.7),ry=Math.floor(Math.random()*PH*.7);
+    const rw=Math.floor(PW*rng(.08,.25)*I()),rh=Math.floor(PH*rng(.08,.25)*I());let n=0;
     for(let y=ry;y<Math.min(ry+rh,PH);y++)for(let x=rx;x<Math.min(rx+rw,PW);x++){
       const cx=Math.floor(x/sz),cy=Math.floor(y/sz);
       if((cx+cy)%2===0){const i=(y*PW+x)*4,v=(cx+cy)%4===0?200:245;d[i]=v;d[i+1]=v;d[i+2]=v;n++;}}
     return n;}},
   drain:{n:'Color Drain',d:'saturation dissolving',fn(d){
-    const rx=Math.floor(Math.random()*PW*.4),ry=Math.floor(Math.random()*PH*.4);
-    const rw=Math.floor(PW*rng(.25,.6)),rh=Math.floor(PH*rng(.25,.6));
-    const f=rng(.3,.7)*Math.min(I(),2);let n=0;
+    const rx=Math.floor(Math.random()*PW*.5),ry=Math.floor(Math.random()*PH*.5);
+    const rw=Math.floor(PW*rng(.15,.45)),rh=Math.floor(PH*rng(.15,.45));
+    const f=rng(.2,.5)*I();let n=0;
     for(let y=ry;y<Math.min(ry+rh,PH);y++)for(let x=rx;x<Math.min(rx+rw,PW);x++){
       const i=(y*PW+x)*4,g=d[i]*.299+d[i+1]*.587+d[i+2]*.114;
       d[i]+=(g-d[i])*f;d[i+1]+=(g-d[i+1])*f;d[i+2]+=(g-d[i+2])*f;n++;}
     return n;}},
   pixel:{n:'Pixel Collapse',d:'resolution degrading',fn(d){
-    const bs=Math.floor(rng(8,30)*Math.min(I(),2));
-    const rx=Math.floor(Math.random()*PW*.5),ry=Math.floor(Math.random()*PH*.5);
-    const rw=Math.floor(PW*rng(.15,.4)),rh=Math.floor(PH*rng(.15,.4));let n=0;
+    const bs=Math.floor(rng(6,22)*I());
+    const rx=Math.floor(Math.random()*PW*.6),ry=Math.floor(Math.random()*PH*.6);
+    const rw=Math.floor(PW*rng(.08,.25)),rh=Math.floor(PH*rng(.08,.25));let n=0;
     for(let by=ry;by<Math.min(ry+rh,PH);by+=bs)for(let bx=rx;bx<Math.min(rx+rw,PW);bx+=bs){
       let r=0,g=0,b=0,c=0;
       for(let y=by;y<Math.min(by+bs,PH);y++)for(let x=bx;x<Math.min(bx+bs,PW);x++){const i=(y*PW+x)*4;r+=d[i];g+=d[i+1];b+=d[i+2];c++;}
@@ -277,8 +270,8 @@ const MU={
       for(let y=by;y<Math.min(by+bs,PH);y++)for(let x=bx;x<Math.min(bx+bs,PW);x++){const i=(y*PW+x)*4;d[i]=r;d[i+1]=g;d[i+2]=b;n++;}}
     return n;}},
   chroma:{n:'Chromatic Shift',d:'channel separation',fn(d){
-    const sh=Math.floor(rng(5,25)*Math.min(I(),2)),ch=Math.floor(Math.random()*3);
-    const ry=Math.floor(Math.random()*PH*.5),rh=Math.floor(PH*rng(.1,.3));
+    const sh=Math.floor(rng(3,14)*I()),ch=Math.floor(Math.random()*3);
+    const ry=Math.floor(Math.random()*PH*.6),rh=Math.floor(PH*rng(.06,.15));
     const cp=new Uint8ClampedArray(d);let n=0;
     for(let y=ry;y<Math.min(ry+rh,PH);y++)for(let x=0;x<PW;x++){
       const sx=Math.min(PW-1,x+sh);d[(y*PW+x)*4+ch]=cp[(y*PW+sx)*4+ch];n++;}
@@ -296,11 +289,11 @@ const MU={
     return n;}},
   ghostEcho:{n:'Ghost Echo',d:'memory afterimage',fn(d){
     const cp=new Uint8ClampedArray(d);
-    const bw=Math.floor(rng(100,350)),bh=Math.floor(rng(100,350));
+    const bw=Math.floor(rng(60,180)),bh=Math.floor(rng(60,180));
     const sx=Math.floor(Math.random()*Math.max(1,PW-bw)),sy=Math.floor(Math.random()*Math.max(1,PH-bh));
-    const ox=Math.floor(rng(-60,60)*Math.min(I(),2)),oy=Math.floor(rng(-60,60)*Math.min(I(),2));
+    const ox=Math.floor(rng(-30,30)),oy=Math.floor(rng(-30,30));
     const dx=Math.max(0,Math.min(PW-bw,sx+ox)),dy=Math.max(0,Math.min(PH-bh,sy+oy));
-    const opacity=rng(.2,.5)*Math.min(I(),2);let n=0;
+    const opacity=rng(.15,.35)*I();let n=0;
     for(let y=0;y<bh;y++)for(let x=0;x<bw;x++){
       const si=((sy+y)*PW+(sx+x))*4,di=((dy+y)*PW+(dx+x))*4;
       d[di]=d[di]+(cp[si]-d[di])*opacity;d[di+1]=d[di+1]+(cp[si+1]-d[di+1])*opacity;
@@ -308,20 +301,20 @@ const MU={
     return n;}},
   ripple:{n:'Memory Ripple',d:'temporal distortion',fn(d){
     const cp=new Uint8ClampedArray(d);
-    const cx=rng(.15,.85)*PW,cy=rng(.15,.85)*PH;
-    const maxR=rng(.08,.25)*Math.max(PW,PH)*Math.min(I(),2);const waves=rng(3,8);let n=0;
+    const cx=rng(.2,.8)*PW,cy=rng(.2,.8)*PH;
+    const maxR=rng(.05,.15)*Math.max(PW,PH)*I();const waves=rng(3,8);let n=0;
     for(let y=Math.max(0,Math.floor(cy-maxR));y<Math.min(PH,Math.ceil(cy+maxR));y++)
       for(let x=Math.max(0,Math.floor(cx-maxR));x<Math.min(PW,Math.ceil(cx+maxR));x++){
         const dist=Math.sqrt((x-cx)**2+(y-cy)**2);
         if(dist<maxR&&dist>0){
-          const displacement=Math.sin(dist/maxR*waves*Math.PI*2)*rng(4,14)*Math.min(I(),2);
+          const displacement=Math.sin(dist/maxR*waves*Math.PI*2)*rng(2,6)*I();
           const srcX=Math.round(x+displacement),srcY=Math.round(y+displacement);
           if(srcX>=0&&srcX<PW&&srcY>=0&&srcY<PH){
             const di=(y*PW+x)*4,si=(srcY*PW+srcX)*4;d[di]=cp[si];d[di+1]=cp[si+1];d[di+2]=cp[si+2];n++;}}}
     return n;}},
   bleach:{n:'Memory Bleach',d:'fading to nothing',fn(d){
-    const cx=rng(.1,.9)*PW,cy=rng(.1,.9)*PH;const rad=rng(.08,.25)*Math.max(PW,PH)*Math.min(I(),2);
-    const str=rng(.15,.5)*Math.min(I(),2);let n=0;
+    const cx=rng(.1,.9)*PW,cy=rng(.1,.9)*PH;const rad=rng(.05,.18)*Math.max(PW,PH)*I();
+    const str=rng(.1,.35)*I();let n=0;
     for(let y=Math.max(0,Math.floor(cy-rad));y<Math.min(PH,Math.ceil(cy+rad));y++)
       for(let x=Math.max(0,Math.floor(cx-rad));x<Math.min(PW,Math.ceil(cx+rad));x++){
         const d2=(x-cx)**2+(y-cy)**2,r2=rad*rad;
@@ -349,7 +342,7 @@ function updateUI(){
   const p=getPhase(S.mint);
   document.getElementById('sMints').textContent=S.mint;
   document.getElementById('edNum').textContent=`#${S.mint} / ∞`;
-  const dc=Math.min(100,Math.round(S.mint*3.5));
+  const dc=Math.min(100,Math.round(S.mint*2.2));
   document.getElementById('sDecay').textContent=dc+'%';
   document.getElementById('sFid').textContent=Math.max(0,100-dc)+'%';
   document.getElementById('df').style.width=dc+'%';
@@ -392,100 +385,10 @@ async function handleMint(){
 }
 
 function handleReset(){
-  if(playing)togglePlay();
   if(!S.origData)return;S.mint=0;S.pxLost=0;S.logN=0;S.phase=0;
   S.curData=new ImageData(new Uint8ClampedArray(S.origData.data),PW,PH);
   X.putImageData(S.curData,0,0);document.getElementById('ls').innerHTML='';
   updateUI();addLog('RESET','memory restored',0);S.generating=false;
-}
-
-// ========= PRECOMPUTED SEQUENCE PLAYBACK =========
-let playing=false,playRAF=null,seqFrames=null,seqIdx=0;
-const TOTAL_FRAMES=35;
-const FRAME_MS=1200;
-
-async function precomputeFrames(){
-  const btn=document.getElementById('playBtn'),lb=document.getElementById('playLb');
-  btn.classList.add('loading');
-  lb.textContent='RENDERING 0/'+TOTAL_FRAMES+'...';
-
-  // Reset to origin
-  const tmpData=new Uint8ClampedArray(S.origData.data);
-  const frames=[];
-  // Frame 0 = original
-  frames.push(new Uint8ClampedArray(tmpData));
-
-  for(let f=1;f<=TOTAL_FRAMES;f++){
-    lb.textContent='RENDERING '+f+'/'+TOTAL_FRAMES+'...';
-    // Allow UI to breathe
-    await new Promise(r=>setTimeout(r,4));
-
-    const ph=getPhase(f);
-    const nm=2+Math.floor(Math.random()*2)+(ph>=4?1:0);
-    for(let m=0;m<nm;m++){
-      const k=mK[Math.floor(Math.random()*mK.length)];
-      MU[k].fn(tmpData);
-    }
-    frames.push(new Uint8ClampedArray(tmpData));
-  }
-
-  btn.classList.remove('loading');
-  return frames;
-}
-
-async function togglePlay(){
-  const btn=document.getElementById('playBtn'),lb=document.getElementById('playLb');
-
-  if(playing){
-    // Stop
-    playing=false;
-    if(playRAF)cancelAnimationFrame(playRAF);
-    playRAF=null;
-    btn.classList.remove('active');
-    lb.textContent='▶ PLAY FULL SEQUENCE';
-    // Restore interactive state to current frame
-    if(seqFrames&&seqIdx>0){
-      S.mint=seqIdx;S.phase=getPhase(seqIdx);
-      S.curData=new ImageData(new Uint8ClampedArray(seqFrames[seqIdx]),PW,PH);
-      X.putImageData(S.curData,0,0);
-      updateUI();
-    }
-    return;
-  }
-
-  // Precompute if needed
-  if(!seqFrames){
-    seqFrames=await precomputeFrames();
-  }
-
-  playing=true;seqIdx=0;
-  btn.classList.add('active');
-  lb.textContent='■ STOP';
-
-  // Put original on canvas
-  const frame0=new ImageData(new Uint8ClampedArray(seqFrames[0]),PW,PH);
-  X.putImageData(frame0,0,0);
-  S.mint=0;S.phase=0;updateUI();
-
-  let lastTime=performance.now();
-
-  function tick(now){
-    if(!playing)return;
-    const elapsed=now-lastTime;
-    if(elapsed>=FRAME_MS){
-      lastTime=now-(elapsed%FRAME_MS);
-      seqIdx++;
-      if(seqIdx>TOTAL_FRAMES){
-        seqIdx=0; // loop
-      }
-      const fd=new ImageData(new Uint8ClampedArray(seqFrames[seqIdx]),PW,PH);
-      X.putImageData(fd,0,0);
-      S.mint=seqIdx;S.phase=getPhase(seqIdx);
-      updateUI();
-    }
-    playRAF=requestAnimationFrame(tick);
-  }
-  playRAF=requestAnimationFrame(tick);
 }
 </script>
 </body>
