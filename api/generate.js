@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     const { imageData, prompt } = req.body;
     if (!imageData || !prompt) return res.status(400).json({ error: 'Missing imageData or prompt' });
 
-    const models = ['gemini-2.0-flash-exp-image-generation', 'gemini-2.5-flash-preview-04-17'];
+    const models = ['gemini-2.5-flash-image', 'gemini-2.0-flash-exp-image-generation'];
     let data = null, lastError = null;
 
     for (const model of models) {
@@ -28,8 +28,12 @@ export default async function handler(req, res) {
           }
         );
         if (response.ok) { data = await response.json(); break; }
-        else { lastError = `${model}: ${response.status}`; }
-      } catch (e) { lastError = `${model}: ${e.message}`; }
+        else {
+          const errBody = await response.text();
+          lastError = `${model}: ${response.status} - ${errBody.substring(0, 200)}`;
+          console.log('Model failed:', lastError);
+        }
+      } catch (e) { lastError = `${model}: ${e.message}`; console.log('Model error:', lastError); }
     }
 
     if (!data) return res.status(502).json({ error: `All models failed. Last: ${lastError}` });
