@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jose Narciso — The Persistence of Memory and Loss</title>
+<meta property="og:title" content="The Persistence of Memory and Loss — Jose Narciso">
+<meta property="og:description" content="An interactive degenerative painting. Each mint erodes the work — colors drain, checkerboard voids consume form. The child grows. The father fades. Memory dissolves into pattern.">
+<meta property="og:image" content="/social-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Persistence of Memory and Loss — Jose Narciso">
+<meta name="twitter:description" content="An interactive degenerative painting. Each mint erodes the work. The child grows. The father fades. Memory dissolves into pattern.">
+<meta name="twitter:image" content="/social-card.png">
+<meta name="description" content="An interactive degenerative painting by Jose Narciso exploring memory loss, aging, and Alzheimer's through generative art.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap');
+:root{--bg:#f0ece4;--fg:#111;--accent:#c62828;--muted:#807a72;--lm:#b8b2a8;--cbg:#e6e1d8}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:'DM Mono',monospace;-webkit-font-smoothing:antialiased}
+.topbar{height:4px;background:var(--fg)}
+.header{padding:18px 32px 14px;border-bottom:2px solid var(--fg);display:flex;align-items:flex-end;justify-content:space-between}
+.artist{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,8vw,96px);letter-spacing:.05em;line-height:.82}
+.hdr-r{text-align:right;padding-bottom:4px}
+.ed-l{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.ed-n{font-family:'Bebas Neue',sans-serif;font-size:30px;line-height:1;margin-top:2px}
+.main{display:grid;grid-template-columns:1fr 360px}
+@media(max-width:1000px){.main{grid-template-columns:1fr}.sidebar{border-left:none!important;border-top:2px solid var(--fg);position:relative!important;height:auto!important}}
+.canvas-area{background:var(--cbg);display:flex;align-items:flex-start;justify-content:center;padding:32px;min-height:85vh;position:relative;
+  background-image:linear-gradient(45deg,rgba(0,0,0,.01) 25%,transparent 25%),linear-gradient(-45deg,rgba(0,0,0,.01) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,rgba(0,0,0,.01) 75%),linear-gradient(-45deg,transparent 75%,rgba(0,0,0,.01) 75%);
+  background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0;background-color:var(--cbg)}
+.canvas-col{display:flex;flex-direction:column;align-items:center;width:100%;transition:opacity .6s ease,filter .6s ease}
+.canvas-col.fading{opacity:.3;filter:blur(3px)}
+#artCanvas{width:100%;max-width:620px;height:auto;display:block;
+  box-shadow:0 2px 4px rgba(0,0,0,.06),0 8px 28px rgba(0,0,0,.1),0 20px 50px rgba(0,0,0,.05);transition:all .8s ease}
+.canvas-col.transitioning #artCanvas{box-shadow:0 0 60px rgba(198,40,40,.08),0 0 120px rgba(26,71,184,.04),0 8px 28px rgba(0,0,0,.06)}
+.c-info{display:flex;align-items:center;gap:14px;margin-top:12px;width:100%;max-width:620px}
+.d-track{flex:1;height:2px;background:var(--lm);position:relative;overflow:hidden}
+.d-fill{position:absolute;top:0;left:0;bottom:0;background:var(--accent);width:0%;transition:width 1.2s cubic-bezier(.16,1,.3,1)}
+.c-label{font-size:7px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.gen-ov{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(230,225,216,.92);display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:10;opacity:0;transition:opacity .4s}
+.gen-ov.on{display:flex;opacity:1}
+.spinner{width:28px;height:28px;border:2px solid var(--lm);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.gen-t{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);text-align:center;max-width:300px}
+.sidebar{border-left:2px solid var(--fg);display:flex;flex-direction:column;background:var(--bg);position:sticky;top:0;height:100vh;overflow:hidden}
+.sb-top{flex:1;overflow-y:auto;padding:20px 18px;scrollbar-width:thin}
+.w-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.1em;line-height:1.1;margin-bottom:2px}
+.w-sub{font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px}
+.desc{font-size:10px;line-height:1.7;color:var(--muted);margin-bottom:18px;font-weight:300}
+.desc strong{color:var(--fg);font-weight:400}
+.arc-t{font-size:7px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.arc-track{display:flex;border:1px solid var(--fg);overflow:hidden;margin-bottom:14px}
+.arc-p{flex:1;padding:7px 4px;position:relative;border-right:1px solid rgba(0,0,0,.08);opacity:.25;transition:all .6s}
+.arc-p:last-child{border-right:none}.arc-p.active{opacity:1}
+.arc-p.cur::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.arc-p:nth-child(1){background:rgba(74,144,217,.06)}.arc-p:nth-child(1).cur::after{background:#4a90d9}
+.arc-p:nth-child(2){background:rgba(100,180,120,.06)}.arc-p:nth-child(2).cur::after{background:#5aad6a}
+.arc-p:nth-child(3){background:rgba(232,168,56,.06)}.arc-p:nth-child(3).cur::after{background:#e8a838}
+.arc-p:nth-child(4){background:rgba(210,100,60,.06)}.arc-p:nth-child(4).cur::after{background:#d2643c}
+.arc-p:nth-child(5){background:rgba(198,40,40,.06)}.arc-p:nth-child(5).cur::after{background:var(--accent)}
+.arc-p:nth-child(6){background:rgba(120,60,160,.06)}.arc-p:nth-child(6).cur::after{background:#7840a0}
+.arc-p:nth-child(7){background:rgba(17,17,17,.04)}.arc-p:nth-child(7).cur::after{background:var(--fg)}
+.arc-n{font-family:'Bebas Neue',sans-serif;font-size:13px}
+.arc-l{font-size:5.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);line-height:1.3}
+.arc-p.cur .arc-l{color:var(--fg)}
+.narr{padding:10px 12px;border:1px solid rgba(0,0,0,.06);margin-bottom:14px;background:rgba(0,0,0,.012);transition:all .5s}
+.narr-t{font-size:9px;line-height:1.6;color:var(--muted);font-style:italic;font-weight:300}
+.narr-t strong{color:var(--fg);font-weight:400;font-style:normal}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--fg);border:1px solid var(--fg);margin-bottom:14px}
+.st{background:var(--bg);padding:9px 10px}
+.st-l{font-size:7px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:1px}
+.st-v{font-family:'Bebas Neue',sans-serif;font-size:20px;line-height:1}
+.st-v.red{color:var(--accent)}
+.log-h{font-size:7px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;display:flex;justify-content:space-between}
+.log-s{max-height:110px;overflow-y:auto;scrollbar-width:thin;margin-bottom:10px}
+.log-e{font-size:8px;line-height:1.4;color:var(--muted);padding:2px 0;border-bottom:1px solid rgba(0,0,0,.03);opacity:0;transform:translateY(-3px);animation:logIn .4s ease forwards;font-weight:300}
+.log-e .n{color:var(--fg);font-weight:400}.log-e .m{color:var(--accent)}
+@keyframes logIn{to{opacity:1;transform:translateY(0)}}
+.api-s{border-top:1px solid rgba(0,0,0,.08);padding-top:12px;margin-bottom:10px}
+.api-t{font-size:7px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.mode-t{display:flex;border:1px solid var(--fg);margin-bottom:4px}
+.mode-o{flex:1;padding:6px 4px;text-align:center;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all .2s;border:none;border-right:1px solid var(--fg);background:transparent;font-family:'DM Mono',monospace}
+.mode-o:last-child{border-right:none}.mode-o.on{background:var(--fg);color:var(--bg)}
+.api-st{font-size:8px;color:#2e7d32;margin-top:4px}
+.mint-area{border-top:2px solid var(--fg);padding:14px 18px}
+.mint-btn{width:100%;height:52px;background:var(--fg);color:var(--bg);border:none;font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:.2em;cursor:pointer;position:relative;overflow:hidden;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.mint-btn:hover{background:var(--accent)}.mint-btn:active{transform:scale(.985)}.mint-btn.busy{pointer-events:none;opacity:.7}
+.mint-btn .pb{position:absolute;left:0;top:0;bottom:0;background:rgba(255,255,255,.08);width:0;transition:width 1s ease}
+.mint-btn .lb{position:relative;z-index:1}
+.mint-m{display:flex;justify-content:space-between;margin-top:6px;font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.mint-m .rst{cursor:pointer}.mint-m .rst:hover{color:var(--accent)}
+.footer{border-top:1px solid var(--fg);padding:8px 32px;display:flex;justify-content:space-between;font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.fdot{width:5px;height:5px;background:var(--accent);display:inline-block;margin-right:6px}
+.dream-ov{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:10000;opacity:0;transition:opacity .8s ease;
+  background:radial-gradient(ellipse at center,rgba(240,236,228,.15) 0%,transparent 70%)}
+.dream-ov.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="dream-ov" id="dreamOv"></div>
+<div class="topbar"></div>
+<header class="header">
+  <div class="artist">JOSE NARCISO</div>
+  <div class="hdr-r"><div class="ed-l">Iteration</div><div class="ed-n" id="edNum">#0 / ∞</div></div>
+</header>
+<div class="main">
+  <div class="canvas-area">
+    <div class="canvas-col" id="cw">
+      <canvas id="artCanvas"></canvas>
+      <div class="c-info"><div class="d-track"><div class="d-fill" id="df"></div></div><div class="c-label" id="cil">I — Origin</div></div>
+    </div>
+    <div class="gen-ov" id="genOv"><div class="spinner"></div><div class="gen-t" id="genText">Memory shifting...</div></div>
+  </div>
+  <aside class="sidebar">
+    <div class="sb-top">
+      <div class="w-title">THE PERSISTENCE OF<br>MEMORY AND LOSS</div>
+      <div class="w-sub">2025 — Degenerative Series</div>
+      <div class="desc">Each mint erodes the work. <strong>Colors drain</strong>, <strong>checkerboard voids</strong> consume form. The child grows. The father fades. Symbols shift and blur. Memory dissolves into pattern.</div>
+      <div class="arc-t">Narrative Arc</div>
+      <div class="arc-track">
+        <div class="arc-p active cur" id="a0"><div class="arc-n">I</div><div class="arc-l">Origin</div></div>
+        <div class="arc-p" id="a1"><div class="arc-n">II</div><div class="arc-l">Drift</div></div>
+        <div class="arc-p" id="a2"><div class="arc-n">III</div><div class="arc-l">Absence</div></div>
+        <div class="arc-p" id="a3"><div class="arc-n">IV</div><div class="arc-l">Growth</div></div>
+        <div class="arc-p" id="a4"><div class="arc-n">V</div><div class="arc-l">Alone</div></div>
+        <div class="arc-p" id="a5"><div class="arc-n">VI</div><div class="arc-l">Seated</div></div>
+        <div class="arc-p" id="a6"><div class="arc-n">VII</div><div class="arc-l">Void</div></div>
+      </div>
+      <div class="narr"><div class="narr-t" id="narrText"><strong>The origin.</strong> Father and son together in a world of vivid color and sharp geometry. Every detail is present. Memory is whole.</div></div>
+      <div class="stats">
+        <div class="st"><div class="st-l">Mints</div><div class="st-v" id="sMints">0</div></div>
+        <div class="st"><div class="st-l">Decay</div><div class="st-v red" id="sDecay">0%</div></div>
+        <div class="st"><div class="st-l">Pixels Lost</div><div class="st-v" id="sPx">0</div></div>
+        <div class="st"><div class="st-l">Fidelity</div><div class="st-v" id="sFid">100%</div></div>
+      </div>
+      <div class="log-h"><span>Mutation Log</span><span id="lc">0 events</span></div>
+      <div class="log-s" id="ls"></div>
+      <div class="api-s">
+        <div class="api-t">Image Generation</div>
+        <div class="mode-t">
+          <button class="mode-o" id="mL" onclick="setMode('local')">Decay Only</button>
+          <button class="mode-o on" id="mA" onclick="setMode('ai')">AI + Decay</button>
+        </div>
+        <div id="apiCfg"><div class="api-st">● Gemini connected</div></div>
+      </div>
+    </div>
+    <div class="mint-area">
+      <button class="mint-btn" id="mintBtn" onclick="handleMint()"><div class="pb" id="pb"></div><span class="lb">MINT NEXT ITERATION</span></button>
+      <div class="mint-m"><span>Each mint transforms the work</span><span class="rst" onclick="handleReset()">↺ Reset</span></div>
+    </div>
+  </aside>
+</div>
+<footer class="footer"><span><span class="fdot"></span>Jose Narciso 2025</span><span>Degenerative Art</span></footer>
+
+<script>
+const C=document.getElementById('artCanvas');
+const X=C.getContext('2d',{willReadFrequently:true});
+const PW=1519,PH=2000;
+C.width=PW;C.height=PH;
+
+const S={mint:0,pxLost:0,logN:0,origData:null,curData:null,loaded:false,mode:'ai',phase:0,generating:false};
+
+const img=new Image();
+img.crossOrigin='anonymous';
+img.onload=()=>{X.drawImage(img,0,0,PW,PH);S.origData=X.getImageData(0,0,PW,PH);S.curData=X.getImageData(0,0,PW,PH);S.loaded=true;};
+img.src='/artwork.png';
+
+const STYLE=`You are editing a bold graphic pop-art oil painting by Jose Narciso. The style features flat color fields, geometric shapes in pink/blue/yellow/green, checkerboard transparency patterns (gray-and-white squares representing digital void/memory loss), surreal landscapes with clouds and curved forms. Figures have blue or red/pink skin, wearing beige clothing. The painting explores Alzheimer's, memory loss, aging, and the confusion of time passing — symbols should shift, memories should intrude as ghostly forms, objects from different life stages can appear anachronistically. The checkerboard pattern is the central metaphor — it represents transparency, void, the deletion of memory, and eventually becomes a blanket of comfort and curse on the elderly figure. Maintain the exact same thick painterly brushwork and pop-art style throughout all transformations. Portrait orientation.`;
+
+const PHA=[
+  {name:'Origin',r:[0,4],label:'I — Origin',
+    narr:'<strong>The origin.</strong> Father and son together in a world of vivid color and sharp geometry. Every detail is present. Memory is whole.',
+    prompt:null},
+  {name:'Drift',r:[5,9],label:'II — The Drift Begins',
+    narr:`<strong>Something shifts.</strong> The father's colors soften. His red head pales at the edges. Background geometry loosens — edges blur where they were once sharp. The child notices nothing yet.`,
+    prompt:STYLE+` Edit this painting with SUBTLE changes: The larger kneeling adult figure's red/pink head should become slightly paler and softer at the edges. Soften some hard geometric edges in the background. Add a few small patches of gray-and-white checkerboard pattern beginning to appear at the far left edge and upper corners. Perhaps a faint ghostly symbol appears in the background — a clock face dissolving, or a doorway half-formed in the geometric blocks — something that suggests time has begun to slip. The child figure remains unchanged. Colors slightly more muted overall. Changes should be subtle, like a photograph left in sunlight.`},
+  {name:'Absence',r:[10,14],label:'III — Growing Absence',
+    narr:`<strong>The father is fading.</strong> His form grows translucent — geometry bleeds through where his body should be solid. The checkerboard creeps inward. The child has grown slightly taller. Fragments of other images — a house, a hand, a half-remembered face — flicker at the edges.`,
+    prompt:STYLE+` Edit this painting: The larger kneeling adult figure on the left is now noticeably MORE TRANSPARENT and FADING — his body should be semi-translucent with background geometric shapes and checkerboard pattern showing through his torso and limbs. His red head is now pale pink, almost white. The smaller blue-skinned child on the right should be slightly taller and more vivid — standing out more. The checkerboard pattern has expanded significantly from the edges inward. Add surreal memory fragments appearing in the background — ghostly half-formed images like a house outline, scattered letters, a dissolving photograph, or hands reaching — painted in the same flat pop-art style but pale and transparent, like memories surfacing and fading. Colors more muted and cooler.`},
+  {name:'Growth',r:[15,19],label:'IV — The Child Grows',
+    narr:`<strong>Time folds.</strong> The father is mostly ghost — fragments floating in checkerboard void. The child has grown into a young man, taller, broader. Objects from different eras appear together impossibly — a child's toy beside reading glasses, a red ball near a cane.`,
+    prompt:STYLE+` Edit this painting significantly: The adult figure on the left should be ALMOST GONE — reduce to a faint ghostly outline with most of his form replaced by checkerboard transparency pattern. Only traces of his shape remain like an afterimage. The figure on the right is now noticeably TALLER and LARGER — proportioned like a teenager/young adult, still blue-skinned, more upright and dominant in the composition. Add anachronistic objects from different life stages appearing in the scene — painted in the same pop-art style: a child's red toy or ball near the bottom, reading glasses floating in mid-air, a walking cane leaning against nothing, a small framed photograph dissolving into checkerboard. These memory objects should feel dreamlike and slightly wrong in scale. Large sections of background consumed by checkerboard. Palette significantly desaturated.`},
+  {name:'Alone',r:[20,24],label:'V — Standing Alone',
+    narr:`<strong>He stands alone.</strong> The father exists only as warmth in the air. The young man occupies the center, surrounded by expanding voids. Memories intrude as ghostly overlays — scenes from a life half-remembered, superimposed on the dissolving landscape.`,
+    prompt:STYLE+` Edit this painting: The adult figure on the left is COMPLETELY GONE — replaced entirely by checkerboard transparency and faded geometric remnants. Perhaps the faintest warm-toned color echo or shadow suggests where he once was. The figure on the right is now a FULL ADULT — tall, central, blue-skinned, standing alone, moved slightly toward center. Add dreamlike memory overlays — ghostly transparent scenes from different life stages superimposed on the background: a birthday cake dissolving, children playing rendered as pale outlines, a wedding ring floating, a hospital hallway fading in and out of the geometric blocks. These should be surreal, overlapping, slightly confused — like trying to remember multiple things at once. Background largely consumed by checkerboard with scattered faded color blocks. A pervasive sense of emptiness and loss.`},
+  {name:'Seated',r:[25,29],label:'VI — The Cycle Completes',
+    narr:`<strong>The cycle completes.</strong> He is old now — seated in a wheelchair at the center of a nearly empty canvas. A checkered blanket covers his lap, the same pattern that consumed his father. Scattered around him: fragments of every age he's been, floating like debris in still water.`,
+    prompt:STYLE+` Edit this painting DRAMATICALLY: Remove all original figures. In the CENTER, place a single elderly man sitting in a WHEELCHAIR — blue-skinned like the original child but now OLD, bald, hunched, thin, wearing rumpled beige clothing. A prominent CHECKERED BLANKET with gray-and-white checkerboard pattern covers his lap and legs — this is the same pattern that consumed his father, now wrapping around him. Around the wheelchair, scatter dream-like memory fragments floating in the nearly empty space: a child's shoe, a pair of blue hands reaching, a red ball, scattered letters or words becoming illegible, a ghostly outline of the father figure hovering protectively but barely visible. The background is very sparse — mostly checkerboard transparency with only scattered fragments of the original colorful geometric blocks remaining as faded ghosts. Deeply melancholic, surreal, haunting.`},
+  {name:'Void',r:[30,999],label:'VII — The Forgetting',
+    narr:`<strong>The void.</strong> The blanket spreads upward through his dissolving body. The wheelchair is half-transparent. Every memory, every symbol, every color is being absorbed into the pattern. Soon there will be only checkerboard where a life once was.`,
+    prompt:STYLE+` Edit this painting to show near-total dissolution: The composition should be OVERWHELMINGLY checkerboard transparency pattern — covering 85-95% of the canvas. Only the faintest ghost traces remain: a barely-visible outline of a wheelchair, wisps of pale blue skin, the thinnest fragments of geometric background floating like debris. The checkerboard blanket has spread upward through the figure, consuming him from below. Tiny scattered remnants of memory objects — a half-pixel of red (the ball), a curve that might have been glasses, a single letter floating — but almost everything is gone. The painting has almost completely forgotten itself. Only enough visible to suggest what was once there — an entire life reduced to pattern and void.`},
+];
+
+function getPhase(m){for(let i=PHA.length-1;i>=0;i--)if(m>=PHA[i].r[0])return i;return 0;}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+
+async function callGemini(phase){
+  if(!phase.prompt)return false;
+  const ov=document.getElementById('genOv'),gt=document.getElementById('genText');
+  ov.classList.add('on');
+  gt.textContent=`Memory shifting to ${phase.name}...`;
+  const curB64=C.toDataURL('image/jpeg',0.82).split(',')[1];
+  try{
+    const res=await fetch('/api/generate',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({imageData:curB64,prompt:phase.prompt})
+    });
+    if(!res.ok){const err=await res.json().catch(()=>({error:'Unknown'}));throw new Error(err.error||`HTTP ${res.status}`);}
+    const{image:imgB64,mimeType}=await res.json();
+    gt.textContent='Dissolving into new memory...';
+    const gi=new Image();
+    await new Promise((ok,no)=>{gi.onload=ok;gi.onerror=no;gi.src=`data:${mimeType};base64,${imgB64}`;});
+    await dreamCrossfade(gi);
+    S.curData=X.getImageData(0,0,PW,PH);
+    ov.classList.remove('on');return true;
+  }catch(e){
+    console.error('Generate error:',e);
+    gt.textContent=`${e.message} — decay only`;
+    await sleep(2000);ov.classList.remove('on');return false;
+  }
+}
+
+async function dreamCrossfade(newImg){
+  const wrap=document.getElementById('cw');
+  wrap.classList.add('fading');await sleep(500);
+  const prev=X.getImageData(0,0,PW,PH);
+  X.drawImage(newImg,0,0,PW,PH);
+  const next=X.getImageData(0,0,PW,PH);
+  const frames=50;
+  for(let f=0;f<=frames;f++){
+    const t=f/frames,e=t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+    const bl=X.createImageData(PW,PH),pd=prev.data,nd=next.data,bd=bl.data;
+    for(let i=0;i<pd.length;i+=4){bd[i]=pd[i]+(nd[i]-pd[i])*e;bd[i+1]=pd[i+1]+(nd[i+1]-pd[i+1])*e;bd[i+2]=pd[i+2]+(nd[i+2]-pd[i+2])*e;bd[i+3]=255;}
+    X.putImageData(bl,0,0);await new Promise(r=>requestAnimationFrame(r));
+  }
+  wrap.classList.remove('fading');
+}
+
+function I(){return Math.min(1,.2+S.mint/30)}
+function rng(a,b){return a+Math.random()*(b-a)}
+
+const MU={
+  checker:{n:'Checkerboard Void',d:'transparency consuming form',fn(d){
+    const sz=Math.floor(rng(8,18)),rx=Math.floor(Math.random()*PW*.7),ry=Math.floor(Math.random()*PH*.7);
+    const rw=Math.floor(PW*rng(.08,.25)*I()),rh=Math.floor(PH*rng(.08,.25)*I());let n=0;
+    for(let y=ry;y<Math.min(ry+rh,PH);y++)for(let x=rx;x<Math.min(rx+rw,PW);x++){
+      const cx=Math.floor(x/sz),cy=Math.floor(y/sz);
+      if((cx+cy)%2===0){const i=(y*PW+x)*4,v=(cx+cy)%4===0?200:245;d[i]=v;d[i+1]=v;d[i+2]=v;n++;}}
+    return n;}},
+  drain:{n:'Color Drain',d:'saturation dissolving',fn(d){
+    const rx=Math.floor(Math.random()*PW*.5),ry=Math.floor(Math.random()*PH*.5);
+    const rw=Math.floor(PW*rng(.15,.45)),rh=Math.floor(PH*rng(.15,.45));
+    const f=rng(.2,.5)*I();let n=0;
+    for(let y=ry;y<Math.min(ry+rh,PH);y++)for(let x=rx;x<Math.min(rx+rw,PW);x++){
+      const i=(y*PW+x)*4,g=d[i]*.299+d[i+1]*.587+d[i+2]*.114;
+      d[i]+=(g-d[i])*f;d[i+1]+=(g-d[i+1])*f;d[i+2]+=(g-d[i+2])*f;n++;}
+    return n;}},
+  pixel:{n:'Pixel Collapse',d:'resolution degrading',fn(d){
+    const bs=Math.floor(rng(6,22)*I());
+    const rx=Math.floor(Math.random()*PW*.6),ry=Math.floor(Math.random()*PH*.6);
+    const rw=Math.floor(PW*rng(.08,.25)),rh=Math.floor(PH*rng(.08,.25));let n=0;
+    for(let by=ry;by<Math.min(ry+rh,PH);by+=bs)for(let bx=rx;bx<Math.min(rx+rw,PW);bx+=bs){
+      let r=0,g=0,b=0,c=0;
+      for(let y=by;y<Math.min(by+bs,PH);y++)for(let x=bx;x<Math.min(bx+bs,PW);x++){const i=(y*PW+x)*4;r+=d[i];g+=d[i+1];b+=d[i+2];c++;}
+      r=Math.round(r/c);g=Math.round(g/c);b=Math.round(b/c);
+      for(let y=by;y<Math.min(by+bs,PH);y++)for(let x=bx;x<Math.min(bx+bs,PW);x++){const i=(y*PW+x)*4;d[i]=r;d[i+1]=g;d[i+2]=b;n++;}}
+    return n;}},
+  chroma:{n:'Chromatic Shift',d:'channel separation',fn(d){
+    const sh=Math.floor(rng(3,14)*I()),ch=Math.floor(Math.random()*3);
+    const ry=Math.floor(Math.random()*PH*.6),rh=Math.floor(PH*rng(.06,.15));
+    const cp=new Uint8ClampedArray(d);let n=0;
+    for(let y=ry;y<Math.min(ry+rh,PH);y++)for(let x=0;x<PW;x++){
+      const sx=Math.min(PW-1,x+sh);d[(y*PW+x)*4+ch]=cp[(y*PW+sx)*4+ch];n++;}
+    return n;}},
+  watercolor:{n:'Watercolor Bleed',d:'pigment diffusing',fn(d){
+    const rx=Math.floor(Math.random()*PW*.5),ry=Math.floor(Math.random()*PH*.5);
+    const rw=Math.floor(PW*rng(.1,.3)),rh=Math.floor(PH*rng(.1,.3));
+    const str=rng(.1,.3)*I();let n=0;
+    const cx=Math.min(PW-1,rx+Math.floor(rw/2)),cy=Math.min(PH-1,ry+Math.floor(rh/2));
+    const ci=(cy*PW+cx)*4;const sr=d[ci],sg=d[ci+1],sb=d[ci+2];
+    for(let y=ry;y<Math.min(ry+rh,PH);y++)for(let x=rx;x<Math.min(rx+rw,PW);x++){
+      const dx=(x-cx)/(rw/2),dy=(y-cy)/(rh/2);const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<1){const fade=str*(1-dist)*(1-dist);const i=(y*PW+x)*4;
+        d[i]+=(sr-d[i])*fade;d[i+1]+=(sg-d[i+1])*fade;d[i+2]+=(sb-d[i+2])*fade;n++;}}
+    return n;}},
+  ghostEcho:{n:'Ghost Echo',d:'memory afterimage',fn(d){
+    const cp=new Uint8ClampedArray(d);
+    const bw=Math.floor(rng(60,180)),bh=Math.floor(rng(60,180));
+    const sx=Math.floor(Math.random()*Math.max(1,PW-bw)),sy=Math.floor(Math.random()*Math.max(1,PH-bh));
+    const ox=Math.floor(rng(-30,30)),oy=Math.floor(rng(-30,30));
+    const dx=Math.max(0,Math.min(PW-bw,sx+ox)),dy=Math.max(0,Math.min(PH-bh,sy+oy));
+    const opacity=rng(.15,.35)*I();let n=0;
+    for(let y=0;y<bh;y++)for(let x=0;x<bw;x++){
+      const si=((sy+y)*PW+(sx+x))*4,di=((dy+y)*PW+(dx+x))*4;
+      d[di]=d[di]+(cp[si]-d[di])*opacity;d[di+1]=d[di+1]+(cp[si+1]-d[di+1])*opacity;
+      d[di+2]=d[di+2]+(cp[si+2]-d[di+2])*opacity;n++;}
+    return n;}},
+  ripple:{n:'Memory Ripple',d:'temporal distortion',fn(d){
+    const cp=new Uint8ClampedArray(d);
+    const cx=rng(.2,.8)*PW,cy=rng(.2,.8)*PH;
+    const maxR=rng(.05,.15)*Math.max(PW,PH)*I();const waves=rng(3,8);let n=0;
+    for(let y=Math.max(0,Math.floor(cy-maxR));y<Math.min(PH,Math.ceil(cy+maxR));y++)
+      for(let x=Math.max(0,Math.floor(cx-maxR));x<Math.min(PW,Math.ceil(cx+maxR));x++){
+        const dist=Math.sqrt((x-cx)**2+(y-cy)**2);
+        if(dist<maxR&&dist>0){
+          const displacement=Math.sin(dist/maxR*waves*Math.PI*2)*rng(2,6)*I();
+          const srcX=Math.round(x+displacement),srcY=Math.round(y+displacement);
+          if(srcX>=0&&srcX<PW&&srcY>=0&&srcY<PH){
+            const di=(y*PW+x)*4,si=(srcY*PW+srcX)*4;d[di]=cp[si];d[di+1]=cp[si+1];d[di+2]=cp[si+2];n++;}}}
+    return n;}},
+  bleach:{n:'Memory Bleach',d:'fading to nothing',fn(d){
+    const cx=rng(.1,.9)*PW,cy=rng(.1,.9)*PH;const rad=rng(.05,.18)*Math.max(PW,PH)*I();
+    const str=rng(.1,.35)*I();let n=0;
+    for(let y=Math.max(0,Math.floor(cy-rad));y<Math.min(PH,Math.ceil(cy+rad));y++)
+      for(let x=Math.max(0,Math.floor(cx-rad));x<Math.min(PW,Math.ceil(cx+rad));x++){
+        const d2=(x-cx)**2+(y-cy)**2,r2=rad*rad;
+        if(d2<r2){const fade=str*((1-Math.sqrt(d2)/rad)**2);const i=(y*PW+x)*4;
+          d[i]+=(255-d[i])*fade;d[i+1]+=(255-d[i+1])*fade;d[i+2]+=(255-d[i+2])*fade;n++;}}
+    return n;}},
+  vignette:{n:'Peripheral Fade',d:'edges darkening',fn(d){
+    const str=rng(.03,.1)*I();let n=0;const hw=PW/2,hh=PH/2;
+    for(let y=0;y<PH;y+=2)for(let x=0;x<PW;x+=2){
+      const dx=(x-hw)/hw,dy=(y-hh)/hh;const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist>.6){const fade=str*(dist-.6)/.4;const i=(y*PW+x)*4;
+        d[i]+=(235-d[i])*fade;d[i+1]+=(228-d[i+1])*fade;d[i+2]+=(216-d[i+2])*fade;n++;}}
+    return n;}},
+  bleed:{n:'Color Bleed',d:'pigment hemorrhage',fn(d){
+    const ts=[[200,40,40],[40,60,180],[220,180,40],[40,160,80]];const t=ts[Math.floor(Math.random()*ts.length)];
+    const rx=Math.floor(Math.random()*PW*.6),ry=Math.floor(Math.random()*PH*.6);
+    const rw=Math.floor(PW*rng(.06,.2)),rh=Math.floor(PH*rng(.06,.2));const s=rng(.06,.2)*I();let n=0;
+    for(let y=ry;y<Math.min(ry+rh,PH);y++)for(let x=rx;x<Math.min(rx+rw,PW);x++){
+      const i=(y*PW+x)*4;d[i]+=(t[0]-d[i])*s;d[i+1]+=(t[1]-d[i+1])*s;d[i+2]+=(t[2]-d[i+2])*s;n++;}
+    return n;}},
+};
+const mK=Object.keys(MU);
+
+function updateUI(){
+  const p=getPhase(S.mint);
+  document.getElementById('sMints').textContent=S.mint;
+  document.getElementById('edNum').textContent=`#${S.mint} / ∞`;
+  const dc=Math.min(100,Math.round(S.mint*2.2));
+  document.getElementById('sDecay').textContent=dc+'%';
+  document.getElementById('sFid').textContent=Math.max(0,100-dc)+'%';
+  document.getElementById('df').style.width=dc+'%';
+  document.getElementById('cil').textContent=PHA[p].label;
+  document.getElementById('narrText').innerHTML=PHA[p].narr;
+  const px=S.pxLost;
+  document.getElementById('sPx').textContent=px>1e6?(px/1e6).toFixed(1)+'M':px>1e3?(px/1e3).toFixed(1)+'K':px;
+  document.getElementById('lc').textContent=S.logN+' events';
+  for(let i=0;i<7;i++){const el=document.getElementById('a'+i);el.classList.toggle('active',i<=p);el.classList.toggle('cur',i===p);}
+}
+function addLog(name,desc,num){S.logN++;const e=document.createElement('div');e.className='log-e';
+  e.innerHTML=`<span class="n">#${num}</span> <span class="m">${name}</span> — ${desc}`;
+  document.getElementById('ls').insertBefore(e,document.getElementById('ls').firstChild);}
+function setMode(m){S.mode=m;document.getElementById('mL').classList.toggle('on',m==='local');
+  document.getElementById('mA').classList.toggle('on',m==='ai');document.getElementById('apiCfg').style.display=m==='ai'?'block':'none';}
+
+async function handleMint(){
+  if(!S.loaded||S.generating)return;
+  S.generating=true;
+  const btn=document.getElementById('mintBtn'),bar=document.getElementById('pb'),wrap=document.getElementById('cw'),dov=document.getElementById('dreamOv');
+  btn.classList.add('busy');bar.style.width='100%';
+  const next=S.mint+1,np=getPhase(next),needGen=np!==S.phase&&S.mode==='ai';
+  S.mint=next;
+  if(needGen){
+    addLog('PHASE SHIFT','dissolving into '+PHA[np].name,S.mint);
+    const ok=await callGemini(PHA[np]);
+    if(!ok)addLog('FALLBACK','AI unavailable, decay only',S.mint);
+  }
+  S.phase=np;
+  dov.classList.add('on');wrap.classList.add('transitioning');
+  await sleep(300);
+  const d=S.curData.data;
+  const nm=2+Math.floor(Math.random()*2)+(np>=4?1:0);
+  const used=new Set();
+  for(let m=0;m<nm;m++){const k=mK[Math.floor(Math.random()*mK.length)];S.pxLost+=MU[k].fn(d);
+    if(!used.has(k)){used.add(k);addLog(MU[k].n,MU[k].d,S.mint);}}
+  X.putImageData(S.curData,0,0);updateUI();
+  await sleep(600);dov.classList.remove('on');wrap.classList.remove('transitioning');
+  setTimeout(()=>{btn.classList.remove('busy');bar.style.width='0';S.generating=false;},400);
+}
+
+function handleReset(){
+  if(!S.origData)return;S.mint=0;S.pxLost=0;S.logN=0;S.phase=0;
+  S.curData=new ImageData(new Uint8ClampedArray(S.origData.data),PW,PH);
+  X.putImageData(S.curData,0,0);document.getElementById('ls').innerHTML='';
+  updateUI();addLog('RESET','memory restored',0);S.generating=false;
+}
+</script>
+</body>
+</html>
